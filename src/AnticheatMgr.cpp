@@ -117,6 +117,14 @@ void AnticheatMgr::StartHackDetection(Player* player, MovementInfo movementInfo,
         return;
     }
 
+    // The server may have moved the player since the last packet (e.g. a
+    // near teleport to a graveyard): measure from the server position.
+    if (!player->IsBeingTeleported() &&
+        m_Players[key].GetLastMapId() == player->GetMapId())
+        m_Players[key].SetPosition(player->GetPositionX(),
+            player->GetPositionY(), player->GetPositionZ(),
+            player->GetOrientation(), player->GetMapId());
+
     TeleportHackDetection(player, movementInfo);
     SpeedHackDetection(player, movementInfo);
     FlyHackDetection(player, movementInfo);
